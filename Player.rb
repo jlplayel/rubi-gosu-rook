@@ -119,14 +119,14 @@ class Player
     show_card_options(card_options)
     selected_card_position = card_options.length + 1
     while selected_card_position.to_i>card_options.length
+      puts self.to_s()
       puts " => Picking up a card. Range (1-#{card_options.length}) :"
       selected_card_position = gets
     end
     selected_card = card_options[selected_card_position.to_i - 1]
     return @hand_cards.delete(selected_card)
   end
-  
-  
+    
   def sort_hand_cards()
     no_number_cards = @hand_cards.select{|c| c.number==nil}
     number_cards = @hand_cards.select{|c| c.number!=nil}

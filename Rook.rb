@@ -100,6 +100,9 @@ class Rook
       first_player_suit = nil
       for turn in 0..(@players.length-1)
         clean_console()
+        puts "Next PLAYER decision: ".concat(@players[next_player_position(first_player_position - 1 + turn)].to_s())
+        gets
+        clean_console()
         puts ""
         puts "Hand cards: " + hand_cards.join("  ")
         if @trump!=nil && @trump!=""
