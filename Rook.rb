@@ -286,5 +286,5 @@ class Rook
   
 end #end class
 
-rook = Rook.new()
-rook.start_game()
+#rook = Rook.new()
+#rook.start_game()
