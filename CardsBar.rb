@@ -1,17 +1,25 @@
 require_relative "CardView"
 
 class CardsBar
+  
   def initialize(window, cards, x, y, min_z)
     @window = window
-    @first_x = x
+    @first_x = @init_padding = x
     @first_y = y
     @z = min_z
-    @card_views = organize_card_views(cards)
+    if cards == nil
+      cards = Array.new
+      @card_views = Array.new
+    else
+      @card_views = organize_card_views(cards)
+    end
   end
-  
+   
   def organize_card_views(cards)
+    @first_x = @init_padding 
     card_number = cards.length
-    card_width = CardView.new(@window, cards[0], 30, 30, 5).width()
+    puts "Initial card_view number: #{card_number}"
+    card_width = CardView.new(@window, cards[0], 0, 0, 5).width()
     
     bar_width = @window.width - 2*@first_x
     width_leftover = bar_width - card_number*card_width- 2*(card_number-1) #2px between cards
@@ -36,12 +44,66 @@ class CardsBar
   end
   
   def draw()
-    #@card_view.draw()
-    @card_views.each{|card| card.draw()}
+    @card_views.each{|card_view| card_view.draw() unless card_view.hidden?}
   end
   
-  def card_in_position(x, y)
-    #TODO
+  def get_card_view_in_position(x, y)
+    picked_card_view = nil
+    if @first_y<y && y<third_y
+      card_position = @card_views.length-1
+      while card_position >=0
+        if !@card_views[card_position].hidden? && @card_views[card_position].is_in_area(x, y)
+          picked_card_view = @card_views[card_position]
+          break
+        end
+        card_position = card_position - 1
+      end
+    end
+    return picked_card_view
+  end
+  
+  def third_y
+    if length==0
+      return @first_y
+    end
+    return @card_views[0].third_y
+  end
+  
+  def length
+    @card_views.length
+  end
+  
+  def cards()
+    return @card_views.collect{|card_view| card_view.card}
+  end
+  
+  def card_views()
+    return @card_views
+  end
+  
+  def add(card_view)
+    puts "Initial card_view number: #{cards.length}"
+    cards = @card_views.collect{|card_view| card_view.card}
+    puts "Added: #{cards}"
+    cards.push(card_view.card)
+    puts "Added: #{cards}"
+    @card_views = organize_card_views(cards)
+  end
+  
+  def remove(hand_card_view)
+    @card_views.delete(hand_card_view)
+    reorganize_card_views()
+  end
+  
+  def remove_at(index)
+    @card_views.delete_at(index)
+    reorganize_card_views()
+  end
+  
+  def reorganize_card_views()
+    if @card_views.length > 0
+      @card_views = organize_card_views(@card_views.collect{|card_view| card_view.card})  
+    end
   end
   
 end

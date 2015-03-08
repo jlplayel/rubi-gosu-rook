@@ -1,7 +1,7 @@
 require_relative "CardTableWindow"
 
 class RookDisplay
-  attr_accessor :player_names, :selected_bet
+  attr_accessor :player_names, :selected_bet, :kitty
   @window
   
   def initialize(tittle)
@@ -74,7 +74,9 @@ class RookDisplay
   end
   
   def show_final_bet(bet_points, player)
-    message = "\n\n\n\n<b>Welcome to the Rook Game!</b>\n Press \"Start\" button for starting..."
+    team_number = (player.number-1)%2+1
+    message = "\n\n\n\n<b>#{player.name} got the challenge!</b>\n" +
+                "So <b>Team #{team_number}</b> has to get <b>#{bet_points}</b> points or more..."
     @window.add_main_message(message)
     @window.add_button("Next".center(12))
     @window.show
@@ -124,6 +126,18 @@ class RookDisplay
     end
     message.concat("\n<b>You're going to:</b>\n")
     return message
+  end
+  
+  def get_kitty(exchange_number, player)
+    message = "\n<b>Choose the #{exchange_number} Kitty's cards, #{player.name}.</b>\n" +
+                "Remember! You cannot leave more than 10 points in the kitty."
+    @window.button_state = "HAND_CARDS"
+    @window.add_main_message(message)
+    @window.add_hand_CardsBar(nil)
+    @window.add_player_CardsBar(player.hand_cards)
+    @window.add_button("Done".center(12))
+    @window.show
+    return self.kitty
   end
   
   def close_window()

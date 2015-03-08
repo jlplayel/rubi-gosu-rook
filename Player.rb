@@ -65,12 +65,23 @@ class Player
     end
   end
   
-  # Added un group of n cards. They mixed with player hand cards. Player has to remove the same n number of cards.
+  # Added a group of n cards. They mixed with player hand cards. Player has to remove the same n number of cards.
   def exchange_cards(added_cards)
     exchange_number = added_cards.length
     puts "Remember! You cannot leave more than 10 points in the kitty. Cards in kitty: " + exchange_number.to_s
     @hand_cards.concat(added_cards).compact!
     sort_hand_cards()
+    
+    if $display == nil
+      added_cards = get_kitty_by_console(exchange_number)
+    else
+      added_cards = $display.get_kitty(exchange_number, self)
+    end
+    
+    return added_cards
+  end
+  
+  def get_kitty_by_console(exchange_number)
     added_cards = Array.new
     for i in 1..exchange_number
       show_all_cards()
@@ -79,8 +90,8 @@ class Player
       card_position = gets
       added_cards.push(@hand_cards.delete_at(card_position.to_i - 1))
     end
-    added_cards
   end
+  
   
   def show_card_options(card_options)
     # Hand list card

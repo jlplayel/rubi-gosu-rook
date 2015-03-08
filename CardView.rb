@@ -26,6 +26,7 @@ class CardView  < Gosu:: Font
       @up_number = Gosu:: Font.new(@window, Gosu.default_font_name, TEXT_HEIGHT)
       @down_number = Gosu:: Font.new(@window, Gosu.default_font_name, TEXT_HEIGHT)
     end
+    @hidden = false
   end
   
   def draw()
@@ -89,6 +90,22 @@ class CardView  < Gosu:: Font
     result = false if x < first_x or third_x < x
     result = false if y < first_y or third_y < y
     return result
+  end
+  
+  def hidden?
+    @hidden
+  end
+  
+  def hide()
+    @hidden = true
+  end
+  
+  def unhide()
+    @hidden = false
+  end
+  
+  def clone()
+    return CardView.new(@window, @card, @first_x, @first_y, @z)
   end
   
 end

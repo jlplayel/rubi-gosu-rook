@@ -10,7 +10,7 @@ class CardTableWindow < Gosu:: Window
   include DefaultWindow
   
   attr_accessor  :button_state
-  # state = "MESSAGE"; "TEXT_FIELD"; "BET_BUTTONS"
+  # state = "MESSAGE"; "TEXT_FIELD"; "BET_BUTTONS"; "HAND_CARDS"
   
   def post_initialize()
     add_main_message("Window working!")
@@ -61,14 +61,47 @@ class CardTableWindow < Gosu:: Window
   def button_down(button_id)
     case button_state
     when "TEXT_FIELD"
-      puts "TEXT_FIELD buton_down --> Working!!!"
       text_fields_buttons(button_id)
     when "BET_BUTTONS"
       bet_buttons()
+    when "HAND_CARDS"
+      puts "HAND_CARDS buton_down --> Working!!!"
+      kitty_buttons()
     else
       puts "default buton_down --> Working!!!"
       message_button()
     end
+  end
+  
+  #TODO
+  def kitty_buttons()
+    if @hand_CardsBar.length==5 && @buttons[0].is_in_area(mouse_x, mouse_y)
+      @controller.kitty = @hand_CardsBar.cards()
+      clean_all()
+      @controller.close_window
+    end
+    
+    player_card_view = @player_CardsBar.get_card_view_in_position(mouse_x, mouse_y)
+    hand_card_view = @hand_CardsBar.get_card_view_in_position(mouse_x, mouse_y)
+    
+    if player_card_view!=nil
+      puts "Selected player card: #{player_card_view.card.to_s}"
+      player_card_view.hide()
+      @hand_CardsBar.add(player_card_view.clone())
+      
+      if @hand_CardsBar.length>=6 #Removing the first card if there are six ones, kitty is only five.
+        hand_card_view = @hand_CardsBar.card_views[0]
+        @hand_CardsBar.remove_at(0)
+      end
+    end
+    
+    if hand_card_view!=nil
+      puts "Selected hand card: #{hand_card_view.card.to_s}"
+      index_in_player = @player_CardsBar.card_views.index{|cv| cv.card==hand_card_view.card}
+      @player_CardsBar.card_views[index_in_player].unhide()
+      @hand_CardsBar.remove(hand_card_view)
+    end
+    
   end
   
   def bet_buttons()
