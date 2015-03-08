@@ -18,17 +18,17 @@ class Player
     @round_points = 0
   end
   
+  
   def make_a_bet(bet_status)
     if bet_status[number-1]!="PASS"
       sort_hand_cards() unless bet_status[number-1]!=0
-      clean_console()
-      show_bet_status(bet_status)
-      puts ""
-      show_all_cards()
-      bet = bet_status.select{|s| s!="PASS" && s!="PASS_PARTNER"}.sort{|x,y| y<=>x}[0]
-      puts self.to_s()
-      puts "Make your BET!! --> PASS:(0) - PASS_PARTNER(1) - BET:(#{bet+5}-200): "
-      selected_bet = gets
+      
+      if $display == nil
+        selected_bet = make_a_bet_by_console(bet_status)
+      else
+        selected_bet = $display.make_a_bet(bet_status, self)
+      end
+      
       if selected_bet.to_i==0
         bet_status[number-1]="PASS"
       elsif selected_bet.to_i==1
@@ -39,6 +39,19 @@ class Player
     end
     return bet_status
   end
+ 
+  def make_a_bet_by_console(bet_status)
+    clean_console()
+    show_bet_status(bet_status)
+    puts ""
+    show_all_cards()
+    bet = bet_status.select{|s| s!="PASS" && s!="PASS_PARTNER"}.sort{|x,y| y<=>x}[0]
+    puts self.to_s()
+    puts "Make your BET!! --> PASS:(0) - PASS_PARTNER(1) - BET:(#{bet+5}-200): "
+    selected_bet = gets
+    return selected_bet
+  end
+  
   
   def show_bet_status(bet_status)
     puts "BETS JUST BEFORE:"

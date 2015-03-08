@@ -26,10 +26,8 @@ class Button  < Gosu:: Font
   
   def is_in_area(x, y)
     result = true
-    result = false if x < first_x
-    result = false if third_x < x
-    result = false if y < first_y
-    result = false if third_y < y
+    result = false if x < first_x or third_x < x
+    result = false if y < first_y or third_y < y
     return result
   end
   

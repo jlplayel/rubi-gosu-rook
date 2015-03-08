@@ -1,6 +1,7 @@
 require_relative "Player"
 require_relative "DeckFactory"
 require_relative "Deck"
+require_relative "RookDisplay"
 
 class Rook
   
@@ -16,6 +17,7 @@ class Rook
   @deck
   
   def initialize()
+    $display = RookDisplay.new("ROOK GAME")
     @points_for_end = 200
     @players = Array.new
     @team_points_table = create_new_points_table()
@@ -23,20 +25,25 @@ class Rook
   end
   
   def start_game()
+    presentation()
     make_teams()
     while not is_there_winner?  do
       play_round()
     end  
   end
   
-  def check_game_winner()
-    
+  def presentation()
+    puts "Welcome to the Rook Game. Press 'enter' for starting"
+    if $display==nil
+      gets
+    else
+      $display.show_presentation()
+    end
   end
   
   def play_round()
     clean_console()
     puts "STARTING A NEW ROUND!!!"
-    gets
     init_round()
     initial_player_position = get_bet_player_position()
     get_final_kitty(initial_player_position)
@@ -184,13 +191,18 @@ class Rook
     while bet_points==-1 do
       player_position = next_player_position(@first_player_position_in_round+i-1)
       bet_status = @players[player_position].make_a_bet(bet_status)
+      puts "BETs are #{bet_status}"
       no_pass_array = bet_status.select{|s| s!="PASS"}
       bet_points=no_pass_array[0] unless no_pass_array.length>1
       i+=1
     end
     player_position = bet_status.index(bet_points)
     puts "Player#{player_position+1} got the challenge of: #{bet_points} bet points."
-    gets
+    if $display == nil
+      gets
+    else
+      $display.show_final_bet(bet_points, @players[player_position])
+    end
     @players[player_position.to_i - 1].bet = bet_points.to_i
     @players[next_player_position(player_position.to_i)].bet = bet_points.to_i
     player_position.to_i
@@ -249,12 +261,29 @@ class Rook
   
   
   def make_teams()
-    for p in 0..3
-         puts "Name of the Player #{1+(p)%2} in the Team #{1+p/2}? (Default 'Player#{p+1}')"
-         name = gets
-         @players.push(Player.new(p+1, name))
+    if $display==nil
+      names = make_teams_by_console()
+    else
+      names = $display.get_player_names()
+    end
+    
+    for p in 1..names.length
+      @players.push(Player.new(p, names[p-1]))
     end
     show_teams()
+  end
+  
+  def make_teams_by_console()
+    names = Array.new
+    for p in 0..3
+         puts "Name of the Player #{1+(p)%2} in the Team #{1+p/2}? (Default 'Player#{p+1}')"
+         name = gets.chomp
+         if name==nil || name==""
+           name = "Player#{p+1}"
+         end
+         names.push(name)
+    end
+    names
   end
   
   def show_teams()
@@ -262,6 +291,9 @@ class Rook
     @players.each{ |player|
       puts player
     }
+    if $display!=nil
+      names = $display.show_teams(@players)
+    end
   end
   
   def clean_console()
@@ -286,5 +318,5 @@ class Rook
   
 end #end class
 
-#rook = Rook.new()
-#rook.start_game()
+rook = Rook.new()
+rook.start_game()
