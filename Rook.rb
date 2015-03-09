@@ -98,18 +98,21 @@ class Rook
     end
   end
   
+  #TODO
   def play_hands(init_player_position)
     first_player_position = init_player_position
     while @players[0].hand_cards.length > 0 do
       hand_cards = Array.new
       puts "NEW HAND! Players.length-> #{@players.length}"
       # A turn per player in a hand
-      first_player_suit = nil
+      #first_player_suit = nil
       for turn in 0..(@players.length-1)
         clean_console()
         puts "Next PLAYER decision: ".concat(@players[next_player_position(first_player_position - 1 + turn)].to_s())
-        gets
-        clean_console()
+        if $display == nil
+          gets
+          clean_console()
+        end
         puts ""
         puts "Hand cards: " + hand_cards.join("  ")
         if @trump!=nil && @trump!=""
@@ -117,8 +120,9 @@ class Rook
           puts "TRUMP: " + @trump
         end
         puts ""
-        hand_cards.push(@players[next_player_position(first_player_position - 1 + turn)].pick_hand_card(first_player_suit))
-        first_player_suit = hand_cards[0].suit
+        hand_cards.push(@players[next_player_position(first_player_position - 1 + turn)].pick_hand_card(hand_cards))
+        #hand_cards.push(@players[next_player_position(first_player_position - 1 + turn)].pick_hand_card(first_player_suit))
+        #first_player_suit = hand_cards[0].suit
       end
       puts "Full hand cards: " + hand_cards.join("  ")
       # Getting the hand points
@@ -128,8 +132,12 @@ class Rook
       end
       # Winner get the points of the hand and is the first next hand
       @players[first_player_position].round_points = @players[first_player_position].round_points + hand_points
+      if $display == nil
+        gets
+      else
+        $display.show_hand_winner(hand_cards, @players[first_player_position], hand_points)
+      end
       first_player_position = (first_player_position + get_hand_winner_position(hand_cards))%4
-      gets
     end
   end
   
@@ -151,7 +159,9 @@ class Rook
     end
     puts "Hand winner card: " + winner_card.to_s
     puts "Winner position in hand: " + cards.index(winner_card).to_s
-    gets
+    if $display == nil
+      gets
+    end
     #position of that card
     return cards.index(winner_card)
   end 

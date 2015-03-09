@@ -112,6 +112,8 @@ module DefaultWindow
   def clean_all()
     @buttons.clear
     @text_fields.clear
+    #@hand_CardsBar = nil
+    #@player_CardsBar = nil
     set_states(true, true, false, false, false)
     post_clean_all()
   end

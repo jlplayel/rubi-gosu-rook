@@ -1,7 +1,7 @@
 require_relative "CardTableWindow"
 
 class RookDisplay
-  attr_accessor :player_names, :selected_bet, :kitty
+  attr_accessor :player_names, :selected_bet, :kitty, :trump, :selected_player_card
   @window
   
   def initialize(tittle)
@@ -131,13 +131,55 @@ class RookDisplay
   def get_kitty(exchange_number, player)
     message = "\n<b>Choose the #{exchange_number} Kitty's cards, #{player.name}.</b>\n" +
                 "Remember! You cannot leave more than 10 points in the kitty."
-    @window.button_state = "HAND_CARDS"
+    @window.button_state = "KITTY_CARDS"
     @window.add_main_message(message)
     @window.add_hand_CardsBar(nil)
     @window.add_player_CardsBar(player.hand_cards)
     @window.add_button("Done".center(12))
     @window.show
+    player.hand_cards = player.hand_cards - self.kitty
     return self.kitty
+  end
+  
+  def get_trump(player)
+    message = "\n<b>Choose the TRUMP  color, #{player.name}.</b>\n"
+    @window.button_state = "TRUMP"
+    @window.add_main_message(message)
+    @window.add_player_CardsBar(player.hand_cards)
+    @window.add_button("BLACK".center(12))
+    @window.add_button("GREEN".center(12))
+    @window.add_button("RED".center(12))
+    @window.add_button("YELLOW".center(12))
+    @window.show
+    return self.trump
+  end
+  
+  def pick_hand_card(hand_cards,card_options, player)
+    message = "\n<b>#{player.name} is your turn!</b>\n" +
+                "Add your played card to the hand and press \"Done\"...\n" +
+                "Remember TRUMP is #{player.special_suit}\n" +
+                "<b>Cards of this hand:</b>"               
+    @window.button_state = "PLAYER_HAND_CARD"
+    @window.general_flag = hand_cards.length
+    @window.add_main_message(message)
+    if hand_cards!=nil && hand_cards.length==0 #It is first step of this hand.
+      @window.add_hand_CardsBar(nil)
+    else
+      @window.add_hand_CardsBar(hand_cards)
+    end
+    @window.add_player_CardsBar(player.hand_cards)
+    @window.add_button("Done".center(12))
+    @window.show
+    return self.selected_player_card
+  end
+  
+  def show_hand_winner(hand_cards, player, hand_points)
+    message = "\n\n<b>#{player.name} won the hand!</b>\n So, Team #{((player.number-1)%2)+1} got #{hand_points} points."
+    @window.button_state = "MESSAGE"
+    @window.add_main_message(message)
+    @window.add_hand_CardsBar(hand_cards)
+    @window.add_button("Next".center(11))
+    @window.show
   end
   
   def close_window()

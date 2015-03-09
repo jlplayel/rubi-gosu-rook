@@ -73,12 +73,12 @@ class Player
     sort_hand_cards()
     
     if $display == nil
-      added_cards = get_kitty_by_console(exchange_number)
+      new_cards = get_kitty_by_console(exchange_number)
     else
-      added_cards = $display.get_kitty(exchange_number, self)
+      new_cards = $display.get_kitty(exchange_number, self)
     end
     
-    return added_cards
+    return new_cards
   end
   
   def get_kitty_by_console(exchange_number)
@@ -121,8 +121,16 @@ class Player
   end
   
   # Player choose which suit or color is going to be special considering the options.
-  # TODO right now player can't not select one suit that it is not in one's card hand!!!!
+  # TODO right now player BY CONSOLE can't not select one suit that it is not in one's card hand!!!!
   def pick_up_special_suit()
+    if $display == nil
+      return pick_up_trump_suit_by_console()
+    else
+      return $display.get_trump(self)
+    end
+  end
+  
+  def pick_up_trump_suit_by_console()
     puts "Player #{number} cards:"
     show_all_cards()
     suit_options = @hand_cards.select{|c| !c.is_special?}.map{|c| c.suit}.uniq
@@ -130,24 +138,36 @@ class Player
     selected_position = gets
     return suit_options[selected_position.to_i - 1]
   end
+
   
-  def pick_hand_card(prioritary_suit)
+  def pick_hand_card(hand_cards)
+    if hand_cards.length > 0
+      prioritary_suit = hand_cards[0].suit
+    else 
+      prioritary_suit = nil
+    end
     show_all_cards()
     card_options = @hand_cards
-    if prioritary_suit!=nil && prioritary_suit!=""
+    if prioritary_suit!=nil
       posible_card_options = @hand_cards.select{|c| c.suit==prioritary_suit}
       if !posible_card_options.empty?
         card_options = posible_card_options
       end
     end
     show_card_options(card_options)
-    selected_card_position = card_options.length + 1
-    while selected_card_position.to_i>card_options.length
-      puts self.to_s()
-      puts " => Picking up a card. Range (1-#{card_options.length}) :"
-      selected_card_position = gets
+    
+    if $display == nil
+      selected_card_position = card_options.length + 1
+      while selected_card_position.to_i>card_options.length
+        puts self.to_s()
+        puts " => Picking up a card. Range (1-#{card_options.length}) :"
+        selected_card_position = gets
+      end
+      selected_card = card_options[selected_card_position.to_i - 1]
+    else
+      $display.ask_for_player(self)
+      selected_card = $display.pick_hand_card(hand_cards,card_options, self)
     end
-    selected_card = card_options[selected_card_position.to_i - 1]
     return @hand_cards.delete(selected_card)
   end
     
