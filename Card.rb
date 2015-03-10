@@ -14,7 +14,7 @@ class Card
   end
   
   def to_s()
-    if is_special?
+    if is_special? && suit==nil
       special_card_name
     else
       number.to_s + ":" + suit

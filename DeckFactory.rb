@@ -26,7 +26,7 @@ class DeckFactory
     }
     
     jocker_a.each { |jocker|
-        cards_result[counter] = Card.new(nil , nil, jocker, points_h[jocker])
+        cards_result[counter] = Card.new(0 , nil, jocker, points_h[jocker])
         counter = counter + 1
     }
     

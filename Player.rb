@@ -172,8 +172,11 @@ class Player
   end
     
   def sort_hand_cards()
-    no_number_cards = @hand_cards.select{|c| c.number==nil}
-    number_cards = @hand_cards.select{|c| c.number!=nil}
+    no_number_cards = []
+    if  @special_suit==nil
+      no_number_cards.concat(@hand_cards.select{|c| c.suit==nil})
+    end
+    number_cards = @hand_cards.select{|c| c.suit!=nil}
     suit_options = number_cards.map{|c| c.suit}.uniq
     @hand_cards = no_number_cards
     suit_options.each{
@@ -190,8 +193,7 @@ class Player
     if !special_cards.empty?
       special_cards.map{
         |c| 
-        c.suit = special_suit
-        c.number = 0
+        c.suit = special_suit.strip
       }
       sort_hand_cards()
     end

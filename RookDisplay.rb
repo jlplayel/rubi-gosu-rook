@@ -151,7 +151,7 @@ class RookDisplay
     @window.add_button("RED".center(12))
     @window.add_button("YELLOW".center(12))
     @window.show
-    return self.trump
+    return self.trump.strip
   end
   
   def pick_hand_card(hand_cards,card_options, player)
@@ -178,6 +178,19 @@ class RookDisplay
     @window.button_state = "MESSAGE"
     @window.add_main_message(message)
     @window.add_hand_CardsBar(hand_cards)
+    @window.add_button("Next".center(11))
+    @window.show
+  end
+  
+  def show_result(team_with_bet_position, players, team_points_table)
+    if team_with_bet_position!=nil
+      message = "\n<b>Team #{team_with_bet_position+1} won the hand!</b>\n"
+    else
+      message = "\n<b>End of the GAME!</b>\n"
+    end
+    message.concat("\nTeam 1: Round points: #{team_points_table[0].last}    Game points: #{team_points_table[0].inject(:+)}\n")
+    message.concat("\nTeam 2: Round points: #{team_points_table[1].last}    Game points: #{team_points_table[1].inject(:+)}\n")
+    @window.add_main_message(message)
     @window.add_button("Next".center(11))
     @window.show
   end

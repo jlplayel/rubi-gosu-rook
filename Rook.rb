@@ -59,16 +59,24 @@ class Rook
     team_with_bet_position = init_player_position % 2
     bet_goal = @players[init_player_position].bet
     # Points for team with bet goal
+    team_with_bed_message = nil
     if teams_card_points[team_with_bet_position] >= bet_goal
       add_points_to_team(team_with_bet_position, teams_card_points[team_with_bet_position])
-      puts "Team #{team_with_bet_position+1} got its goal!!!!!"
+      team_with_bed_message =  "Team #{team_with_bet_position+1} got its goal!!!!!"
     else
       add_points_to_team(team_with_bet_position, -bet_goal)
-      puts "Team #{team_with_bet_position+1} did NOT get its goal!!!!!"  
+      team_with_bed_message =  "Team #{team_with_bet_position+1} did NOT get its goal!!!!!"  
     end
     # Points for team without goal
     add_points_to_team((team_with_bet_position+1)%2, teams_card_points[(team_with_bet_position+1)%2])
-    gets
+    
+    puts team_with_bed_message
+    
+    if $display==nil
+      gets
+    else
+      $display.show_result(team_with_bet_position, @players, @team_points_table)
+    end
   end
   
   def init_round()
@@ -131,13 +139,13 @@ class Rook
         hand_points = hand_points + count_points(@kitty) + 20
       end
       # Winner get the points of the hand and is the first next hand
+      first_player_position = (first_player_position + get_hand_winner_position(hand_cards))%4
       @players[first_player_position].round_points = @players[first_player_position].round_points + hand_points
       if $display == nil
         gets
       else
         $display.show_hand_winner(hand_cards, @players[first_player_position], hand_points)
       end
-      first_player_position = (first_player_position + get_hand_winner_position(hand_cards))%4
     end
   end
   
@@ -174,7 +182,7 @@ class Rook
     else
       cards.each{
         |c|
-        if !c.is_special? && c.number==1
+        if c.number==1
           return c
         end
       }
