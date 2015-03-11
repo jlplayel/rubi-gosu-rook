@@ -60,12 +60,12 @@ module DefaultWindow
   end
   
   def add_hand_CardsBar(cards)
-    @hand_CardsBar = CardsBar.new(self, cards, 5, 200, 5)
+    @hand_CardsBar = CardsBar.new(self, cards, 5, 200, 5, nil)
     @show_hand_cards = true
   end
   
-  def add_player_CardsBar(cards)
-    @player_CardsBar = CardsBar.new(self, cards, 5, 450, 5)
+  def add_player_CardsBar(cards, priority_suit)
+    @player_CardsBar = CardsBar.new(self, cards, 5, 450, 5, priority_suit)
     @show_player_cards = true
   end
   

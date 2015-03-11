@@ -199,6 +199,10 @@ class Player
     end
   end
   
+  def has_cards_color(color)
+    !hand_cards.select{|card| card.suit==color}.empty?
+  end
+  
   def to_s()
     "Player: #{number} - Team: #{1+(number-1)%2} - Name: #{name}"
   end

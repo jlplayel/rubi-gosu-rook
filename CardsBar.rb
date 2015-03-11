@@ -1,12 +1,16 @@
+require 'gosu'
 require_relative "CardView"
 
 class CardsBar
   
-  def initialize(window, cards, x, y, min_z)
+  PRIORITY_MARK_COLOR = Gosu::Color.argb(0x7729A813)
+  
+  def initialize(window, cards, x, y, min_z, priority_suit)
     @window = window
     @first_x = @init_padding = x
     @first_y = y
     @z = min_z
+    @priority_suit = priority_suit
     if cards == nil
       cards = Array.new
       @card_views = Array.new
@@ -38,13 +42,35 @@ class CardsBar
     
     card_views = Array.new
     for index in 0..(cards.length-1)    #CardView.new(window, card, x, y, z))
-      card_views.push(CardView.new(@window, cards[index], @first_x + index*card_x_separation, @first_y, @z + 5*index))
+        card_views.push(CardView.new(@window, cards[index], @first_x + index*card_x_separation, @first_y, @z + 5*index + suit_priority_z(cards[index])))
     end
     return card_views
   end
   
+  def suit_priority_z(card)
+    if @priority_suit!=nil && card.suit.eql?(@priority_suit)
+      return 100
+    else
+      return 0
+    end
+  end
+  
+  def minimum_z()
+    if @priority_suit!=nil
+      return 100
+    end
+    return 0
+  end
+  
   def draw()
     @card_views.each{|card_view| card_view.draw() unless card_view.hidden?}
+    
+    if @priority_suit!=nil
+      @window.draw_quad(0, @first_y, PRIORITY_MARK_COLOR,
+                        @window.width, @first_y, PRIORITY_MARK_COLOR, 
+                        @window.width, third_y, PRIORITY_MARK_COLOR, 
+                        0, third_y, PRIORITY_MARK_COLOR, z = minimum_z(), mode = :default)
+    end
   end
   
   def get_card_view_in_position(x, y)
@@ -52,7 +78,7 @@ class CardsBar
     if @first_y<y && y<third_y
       card_position = @card_views.length-1
       while card_position >=0
-        if !@card_views[card_position].hidden? && @card_views[card_position].is_in_area(x, y)
+        if !@card_views[card_position].hidden? && @card_views[card_position].is_in_area(x, y, minimum_z())
           picked_card_view = @card_views[card_position]
           break
         end

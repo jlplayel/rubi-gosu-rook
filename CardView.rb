@@ -46,10 +46,11 @@ class CardView  < Gosu:: Font
     @card_image.draw(first_x, first_y, @z+1)
   end
   
-  def is_in_area(x, y)
+  def is_in_area(x, y, minimum_z)
     result = true
     result = false if x < first_x or third_x < x
     result = false if y < first_y or third_y < y
+    result = false if z < minimum_z
     return result
   end
   
@@ -85,10 +86,11 @@ class CardView  < Gosu:: Font
     return @gosu_color
   end
   
-  def is_in_area(x, y)
+  def is_in_area(x, y, min_z)
     result = true
     result = false if x < first_x or third_x < x
     result = false if y < first_y or third_y < y
+    result = false if z < min_z
     return result
   end
   

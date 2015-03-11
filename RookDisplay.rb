@@ -10,7 +10,7 @@ class RookDisplay
   end
   
   def show_presentation()
-    message = "\n\n\n\n<b>Welcome to the Rook Game!</b>\n Press \"Start\" button for starting..."
+    message = "\n\n\n\n<b>Welcome to the Rook Game!</b>\n Press \"Start\" to begin..."
     @window.add_main_message(message)
     @window.add_button("Start".center(11))
     @window.show
@@ -19,7 +19,7 @@ class RookDisplay
   def get_player_names()
     @player_names = Array.new
     @window.button_state = "TEXT_FIELD"
-    @window.add_main_message("<b>PLAYER NAMES</b>\nPlayer1 and Player3 VS. Player2 and Player4.\nPlayer 1 name:\n\nPlayer 2 name:\n\nPlayer 3 name:\n\nPlayer 4 name:")
+    @window.add_main_message("<b>INPUT PLAYER NAMES</b>\nPlayer1 and Player3 VS. Player2 and Player4.\nPlayer 1 name:\n\nPlayer 2 name:\n\nPlayer 3 name:\n\nPlayer 4 name:")
     @window.clean_buttons()
     @window.add_button("Done".center(11))
     @window.add_text_fields(4)
@@ -37,8 +37,8 @@ class RookDisplay
   
   def ask_for_player(player)
     @window.clean_all()
-    message = "\n\n\n\n<b>TURN OF PLAYER #{player.number}: #{player.name}</b>\n" +
-                "Press 'Next' button if you are the player..."
+    message = "\n\n\n\n<b>PLAYER #{player.number}'S TURN: #{player.name}</b>\n" +
+                "Press 'Next' if you are the player..."
     @window.add_main_message(message)
     @window.clean_buttons()
     @window.add_button("Next".center(11))
@@ -51,7 +51,7 @@ class RookDisplay
     @window.button_state = "BET_BUTTONS"
     @window.add_main_message(message)
     @window.add_font(last_bet(bet_status, player), 50, 220, 320) #(..., text_size, x, y)
-    @window.add_player_CardsBar(player.hand_cards)
+    @window.add_player_CardsBar(player.hand_cards, nil)
     @window.clean_buttons()
     @window.add_button("Done".center(12))
     @window.add_button("PASS".center(10))
@@ -75,7 +75,7 @@ class RookDisplay
   
   def show_final_bet(bet_points, player)
     team_number = (player.number-1)%2+1
-    message = "\n\n\n\n<b>#{player.name} got the challenge!</b>\n" +
+    message = "\n\n\n\n<b>#{player.name} gets the challenge!</b>\n" +
                 "So <b>Team #{team_number}</b> has to get <b>#{bet_points}</b> points or more..."
     @window.add_main_message(message)
     @window.add_button("Next".center(12))
@@ -134,7 +134,7 @@ class RookDisplay
     @window.button_state = "KITTY_CARDS"
     @window.add_main_message(message)
     @window.add_hand_CardsBar(nil)
-    @window.add_player_CardsBar(player.hand_cards)
+    @window.add_player_CardsBar(player.hand_cards, nil)
     @window.add_button("Done".center(12))
     @window.show
     player.hand_cards = player.hand_cards - self.kitty
@@ -145,7 +145,7 @@ class RookDisplay
     message = "\n<b>Choose the TRUMP  color, #{player.name}.</b>\n"
     @window.button_state = "TRUMP"
     @window.add_main_message(message)
-    @window.add_player_CardsBar(player.hand_cards)
+    @window.add_player_CardsBar(player.hand_cards, nil)
     @window.add_button("BLACK".center(12))
     @window.add_button("GREEN".center(12))
     @window.add_button("RED".center(12))
@@ -155,7 +155,7 @@ class RookDisplay
   end
   
   def pick_hand_card(hand_cards,card_options, player)
-    message = "\n<b>#{player.name} is your turn!</b>\n" +
+    message = "\n<b>#{player.name}, it is your turn!</b>\n" +
                 "Add your played card to the hand and press \"Done\"...\n" +
                 "Remember TRUMP is #{player.special_suit}\n" +
                 "<b>Cards of this hand:</b>"               
@@ -167,14 +167,18 @@ class RookDisplay
     else
       @window.add_hand_CardsBar(hand_cards)
     end
-    @window.add_player_CardsBar(player.hand_cards)
+    priority_suit = nil
+    if hand_cards.length>0 && player.has_cards_color(hand_cards[0].suit)
+      priority_suit = hand_cards[0].suit
+    end
+    @window.add_player_CardsBar(player.hand_cards, priority_suit)
     @window.add_button("Done".center(12))
     @window.show
     return self.selected_player_card
   end
   
   def show_hand_winner(hand_cards, player, hand_points)
-    message = "\n\n<b>#{player.name} won the hand!</b>\n So, Team #{((player.number-1)%2)+1} got #{hand_points} points."
+    message = "\n\n<b>#{player.name} wins the hand!</b>\n So, Team #{((player.number-1)%2)+1} got #{hand_points} points."
     @window.button_state = "MESSAGE"
     @window.add_main_message(message)
     @window.add_hand_CardsBar(hand_cards)
@@ -182,16 +186,26 @@ class RookDisplay
     @window.show
   end
   
-  def show_result(team_with_bet_position, players, team_points_table)
-    if team_with_bet_position!=nil
-      message = "\n<b>Team #{team_with_bet_position+1} won the hand!</b>\n"
-    else
-      message = "\n<b>End of the GAME!</b>\n"
-    end
+  def show_round_result(team_with_bet_position, players, team_points_table)
+    message = "\n<b>Team #{team_with_bet_position+1} wins the hand!</b>\n"
     message.concat("\nTeam 1: Round points: #{team_points_table[0].last}    Game points: #{team_points_table[0].inject(:+)}\n")
     message.concat("\nTeam 2: Round points: #{team_points_table[1].last}    Game points: #{team_points_table[1].inject(:+)}\n")
     @window.add_main_message(message)
     @window.add_button("Next".center(11))
+    @window.show
+  end
+  
+  def show_game_winners(team1_points, team2_points, players)
+    message = "\n<b>Game Over!</b>\n"
+    if team1_points == team2_points
+      message.concat("\n<b>Both teams win the game with #{team1_points} points!</b>\n")
+    elsif
+      message.concat("\n<b>#{players[0].name} and #{players[2].name} win the game with #{team1_points} points VS.</b> #{team2_points} points of Team 2!</b>\n")
+    else
+      message.concat("\n<b>#{players[1].name} and #{players[3].name} win the game with #{team2_points} points VS.</b> #{team1_points} points of Team 1!</b>\n")
+    end
+    @window.add_main_message(message)
+    @window.add_button("Finish".center(11))
     @window.show
   end
   

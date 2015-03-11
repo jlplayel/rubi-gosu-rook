@@ -105,7 +105,7 @@ class CardTableWindow < Gosu:: Window
     end
     
     player_card_view = @player_CardsBar.get_card_view_in_position(mouse_x, mouse_y)
-    if @hand_CardsBar.length==(init_cards_number+1) && @hand_CardsBar.card_views[init_cards_number].is_in_area(mouse_x, mouse_y)
+    if @hand_CardsBar.length==(init_cards_number+1) && @hand_CardsBar.card_views[init_cards_number].is_in_area(mouse_x, mouse_y, 0)
       hand_card_view = @hand_CardsBar.card_views[init_cards_number]
     end
     

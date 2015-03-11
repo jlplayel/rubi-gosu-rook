@@ -18,7 +18,7 @@ class Rook
   
   def initialize()
     $display = RookDisplay.new("ROOK GAME")
-    @points_for_end = 200
+    @points_for_end = 500
     @players = Array.new
     @team_points_table = create_new_points_table()
     @first_player_position_in_round = rand(0..4)
@@ -29,7 +29,8 @@ class Rook
     make_teams()
     while not is_there_winner?  do
       play_round()
-    end  
+    end
+    show_final_winners()
   end
   
   def presentation()
@@ -75,7 +76,7 @@ class Rook
     if $display==nil
       gets
     else
-      $display.show_result(team_with_bet_position, @players, @team_points_table)
+      $display.show_round_result(team_with_bet_position, @players, @team_points_table)
     end
   end
   
@@ -248,23 +249,29 @@ class Rook
   end
   
   def is_there_winner?
-    return true if team_with_point(@points_for_end)
+    return true if team_with_enought_points()
     false
   end
   
-  def team_with_point(end_points)
-    team1_points = @team_points_table[0].reduce(:+)
-    team2_points = @team_points_table[1].reduce(:+)
-    if team1_points >= end_points || team2_points >= end_points
-      show_game_winner(team1_points, team2_points)  #TODO remove from here, 2 responsabilities!!!!!
+  def team_with_enought_points()
+    if get_game_points_of_team(1) >= @points_for_end || get_game_points_of_team(2) >= @points_for_end
       return true
     end
     return false
   end
   
+  def get_game_points_of_team(number)
+    @team_points_table[number-1].reduce(:+)
+  end
   
-  def show_game_winner(team1_points, team2_points)
-    if team1_points >= @points_for_end || team2_points >= @points_for_end
+  def show_final_winners()
+    show_game_winners(get_game_points_of_team(1), get_game_points_of_team(2))
+  end
+  
+  def show_game_winners(team1_points, team2_points)
+    if $display == nil
+      team1_points = get_game_points_of_team(1)
+      team2_points = get_game_points_of_team(2)
       if team1_points > team2_points
         puts "Team ONE has won with #{team1_points} points vs team two with #{team2_points} points!!!!"
       elsif team1_points = team2_points
@@ -272,9 +279,11 @@ class Rook
       else
         puts "Team TWO has won with #{team2_points} points vs team one with #{team1_points} points!!!!"
       end
-      return true
+      gets
+    else
+      $display.show_game_winners(team1_points, team2_points, @players)
     end
-      return false
+    
   end
   
   
@@ -332,6 +341,8 @@ class Rook
     # Team 0 -> Players 0 and 2
     # Team 1 -> Players 1 and 3
     @team_points_table[team_position].push(team_points)
+    puts "Team1 POINTS: #{@team_points_table[0].join("  ")}"
+    puts "Team2 POINTS: #{@team_points_table[1].join("  ")}"
   end
   
 end #end class
