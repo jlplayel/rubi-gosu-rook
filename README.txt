@@ -2,12 +2,17 @@ RUN ROOK GAME
 - Install Ruby (version 1.9.3).
 - Install Gosu library (Window console:> gem install gosu).
 - Execute Rook.rb (Window console:> ruby Rook.rb).
+- For Stopping the application press ESC.
+
+LIBRARIES
+- gosu (graphics)
+- rubygems (Button IDs)
 
 RELATED LINKS
-- About Rook game:
-- About installing Ruby:
-- About Gosu:
-- About Portocarrero's sun:
+- About Rook game: https://en.wikipedia.org/wiki/Rook_%28card_game%29
+- About installing Ruby: https://www.ruby-lang.org/en/
+- About Gosu: http://www.libgosu.org/
+- About Vallalan's sun: http://almeracultural.blogspot.com/2010/07/sol-de-portocarrero.html
 
 RULES AND LIMITS OF THIS GAME VERSION
 - You can play Rook with different rules, in this version:
@@ -19,15 +24,17 @@ RULES AND LIMITS OF THIS GAME VERSION
 
 
 FOR DEVELOPERS:
+- TextField class is an adaptation of other developer:
+	(https://github.com/jlnr/gosu/blob/master/examples/TextInput.rb)
 - Playing by console. (Change the value @points_for_end = 500 in Rook.rb)
 - Changing the points for finishing the game. (Initialize $display = nil in Rook.rb)
 - Possible points to improve
 
-A) The game was developed for playing by console and later adapted for Gosu view library. So the code was forced for use Gosu in a way that it was not design for. In one hand with the idea of reuse the initial console version of the game and in the other hand to stay in the MVC pattern:
+A) The game was developed for playing by console and later adapted for Gosu view library. So the code was forced for using Gosu in a way that it was not design for. In one hand with the idea of reuse the initial console version and in the other hand to stay in the MVC pattern:
 	* Model classes: Rook, Card, Player, Deck, DeckFactory (Console version)
 	* View: CardTableWindow, DefaultWindow, CardView, Button, TextField, CardsBar
 	* Controller: RookDisplay
-For giving back the control to the game, the window is close between different views. This makes that the close button "X" in the corner of the window do not work properly, it pass you to the next view. Initially I expected other behaviour in window.close, my idea was to open a new window for every view. I check this option only for curiosity thinking I would not like the result and past to the next idea, giving back the control by raising exceptions. Anyway if you insist over "X" button you stop by braking the execution. The ideal would be to solve this.
+For giving back the control to the game, the window is close between different views. This makes that the close button "X" in the corner of the window do not work properly, it passes you to the next view. Initially I expected other behaviour in "close", my idea was to open a new window for every view. I check this option only for curiosity thinking I would not like the result and past to the next idea, giving back the control by raising exceptions. Anyway if you insist over "X" button you stop by braking the execution. The ideal would be to solve this. It looks like you cannot control de "X" button from the code.
 
 B) Adding the option of "Shoot the moon" require to add tracking of every hand in a round, not only the points. Adding a flag that would be false in case the Team with the bet would loose a hand. Plus adding the new button to the view and adding the functionality to counting points.
 

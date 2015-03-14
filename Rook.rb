@@ -59,14 +59,15 @@ class Rook
                          @players[1].round_points + @players[3].round_points]
     team_with_bet_position = init_player_position % 2
     bet_goal = @players[init_player_position].bet
+    puts "Team #{team_with_bet_position+1} had the #{bet_goal} points bet"  
     # Points for team with bet goal
     team_with_bed_message = nil
     if teams_card_points[team_with_bet_position] >= bet_goal
       add_points_to_team(team_with_bet_position, teams_card_points[team_with_bet_position])
-      team_with_bed_message =  "Team #{team_with_bet_position+1} got its goal!!!!!"
+      team_with_bed_message =  "Team #{team_with_bet_position+1} got its #{bet_goal} points goal, with #{teams_card_points[team_with_bet_position]}!!!!!"
     else
       add_points_to_team(team_with_bet_position, -bet_goal)
-      team_with_bed_message =  "Team #{team_with_bet_position+1} did NOT get its goal!!!!!"  
+      team_with_bed_message =  "Team #{team_with_bet_position+1} did NOT get its #{bet_goal} points goal!!!!! Just #{teams_card_points[team_with_bet_position]}!"  
     end
     # Points for team without goal
     add_points_to_team((team_with_bet_position+1)%2, teams_card_points[(team_with_bet_position+1)%2])
@@ -205,26 +206,26 @@ class Rook
   def get_bet_player_position()
     bet_points = -1
     player_position = -1
-    bet_status = Array.new(@players.length){0}
+    player_bets = Array.new(@players.length){0}
     i = 0
     while bet_points==-1 do
       player_position = next_player_position(@first_player_position_in_round+i-1)
-      bet_status = @players[player_position].make_a_bet(bet_status)
-      puts "BETs are #{bet_status}"
-      no_pass_array = bet_status.select{|s| s!="PASS"}
-      bet_points=no_pass_array[0] unless no_pass_array.length>1
+      player_bets = @players[player_position].make_a_bet(player_bets)
+      puts "BETs are #{player_bets}"
+      no_pass_array = player_bets.select{|s| s!="PASS"}
+      bet_points = no_pass_array[0] unless no_pass_array.length>1
       i+=1
     end
-    player_position = bet_status.index(bet_points)
+    player_position = player_bets.index(bet_points)
     puts "Player#{player_position+1} got the challenge of: #{bet_points} bet points."
     if $display == nil
       gets
     else
       $display.show_final_bet(bet_points, @players[player_position])
     end
-    @players[player_position.to_i - 1].bet = bet_points.to_i
-    @players[next_player_position(player_position.to_i)].bet = bet_points.to_i
-    player_position.to_i
+    @players[player_position].bet = bet_points.to_i
+    @players[next_player_position(player_position+1)].bet = bet_points.to_i
+    return player_position
   end
   
   def dealing_cards()
@@ -245,7 +246,7 @@ class Rook
   end
   
   def next_player_position(position)
-    (position+1)%(@players.length)
+    return (position+1)%(@players.length)
   end
   
   def is_there_winner?

@@ -59,23 +59,27 @@ class CardTableWindow < Gosu:: Window
   
   
   def button_down(button_id)
+    puts "Button_down --> Working!!!"
+    if button_id == Gosu::KbEscape
+      Process.exit!
+    end
     case button_state
-    when "TEXT_FIELD"
-      text_fields_buttons(button_id)
-    when "BET_BUTTONS"
-      bet_buttons()
-    when "KITTY_CARDS"
-      puts "HAND_CARDS button_down --> Working!!!"
-      kitty_buttons()
-    when "TRUMP"
-        puts "TRUMP button_down --> Working!!!"
-        trump_buttons()
-    when "PLAYER_HAND_CARD"
-      puts "PLAYER_HAND_CARD button_down --> Working!!!"
-      hand_buttons()
-    else
-      puts "default button_down --> Working!!!"
-      message_button()
+      when "TEXT_FIELD"
+        text_fields_buttons(button_id)
+      when "BET_BUTTONS"
+        bet_buttons()
+      when "KITTY_CARDS"
+        puts "HAND_CARDS button_down --> Working!!!"
+        kitty_buttons()
+      when "TRUMP"
+          puts "TRUMP button_down --> Working!!!"
+          trump_buttons()
+      when "PLAYER_HAND_CARD"
+        puts "PLAYER_HAND_CARD button_down --> Working!!!"
+        hand_buttons()
+      else
+        puts "default button_down --> Working!!!"
+        message_button()
     end
   end
   
@@ -95,7 +99,6 @@ class CardTableWindow < Gosu:: Window
   end
   
   def hand_buttons()
-    #TODO
     init_cards_number = general_flag
     
     if @hand_CardsBar.length==(init_cards_number+1) && @buttons[0].is_in_area(mouse_x, mouse_y)
@@ -228,8 +231,21 @@ class CardTableWindow < Gosu:: Window
     @font_first_y = 0
     @show_font = false
   end
-    
   
+  def real_close=(boolean)
+    @real_close = boolean
+  end
+  
+  def close
+    puts "-->close  method"
+    if @real_close==true
+      puts "Real Close"
+      Process.exit!
+    end
+    puts "Fake Close"
+    super
+  end
+   
 end  #class
 
 #window = CardTableDisplay.new("Rook Game")

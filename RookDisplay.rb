@@ -2,7 +2,6 @@ require_relative "CardTableWindow"
 
 class RookDisplay
   attr_accessor :player_names, :selected_bet, :kitty, :trump, :selected_player_card
-  @window
   
   def initialize(tittle)
     @tittle = tittle
@@ -187,9 +186,13 @@ class RookDisplay
   end
   
   def show_round_result(team_with_bet_position, players, team_points_table)
-    message = "\n<b>Team #{team_with_bet_position+1} wins the hand!</b>\n"
-    message.concat("\nTeam 1: Round points: #{team_points_table[0].last}    Game points: #{team_points_table[0].inject(:+)}\n")
-    message.concat("\nTeam 2: Round points: #{team_points_table[1].last}    Game points: #{team_points_table[1].inject(:+)}\n")
+    if team_points_table[team_with_bet_position].last < 0
+      message = "\n<b>Team #{team_with_bet_position+1} does NOT get its goal and lose the round!</b>\n"
+    else
+      message = "\n<b>Team #{team_with_bet_position+1} gets the goal and wins the round!</b>\n"
+    end
+    message.concat("\nTeam 1: Round points: #{team_points_table[0].last} ... Game points: #{team_points_table[0].inject(:+)}\n")
+    message.concat("\nTeam 2: Round points: #{team_points_table[1].last} ... Game points: #{team_points_table[1].inject(:+)}\n")
     @window.add_main_message(message)
     @window.add_button("Next".center(11))
     @window.show
@@ -210,7 +213,10 @@ class RookDisplay
   end
   
   def close_window()
+    puts "-->close_window  method"
+    @window.real_close = false
     @window.close
+    @window.real_close = true
   end
   
   
