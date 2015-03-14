@@ -26,8 +26,8 @@ RULES AND LIMITS OF THIS GAME VERSION
 FOR DEVELOPERS:
 - TextField class is an adaptation of other developer:
 	(https://github.com/jlnr/gosu/blob/master/examples/TextInput.rb)
-- Playing by console. (Change the value @points_for_end = 500 in Rook.rb)
-- Changing the points for finishing the game. (Initialize $display = nil in Rook.rb)
+- Playing by console. (Initialize $display = nil in Rook.rb)
+- Changing the points for finishing the game. (Change the value @points_for_end = 500 in Rook.rb)
 - Possible points to improve
 
 A) The game was developed for playing by console and later adapted for Gosu view library. So the code was forced for using Gosu in a way that it was not design for. In one hand with the idea of reuse the initial console version and in the other hand to stay in the MVC pattern:
